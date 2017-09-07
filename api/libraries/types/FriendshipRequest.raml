@@ -1,0 +1,17 @@
+#%RAML 1.0 DataType
+type: object
+displayName: Friendship Request Object
+properties:
+  sender:
+    type: string
+    description: Username of request's sender
+    example: john123
+  reciever:
+    type: string
+    description: Username of request's reciever
+    example: max234
+  sendTime:
+    type: datetime-only
+    description: Request's creation time
+    example: 1998-05-03T21:00:00
+

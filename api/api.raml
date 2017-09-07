@@ -1,0 +1,309 @@
+#%RAML 1.0
+title: Hurricane Messenger REST API
+version: v1
+protocols: [HTTP]
+baseUri: http://message-natter.com/api/{version}
+mediaType: application/json
+uses:
+  objects: !include ./libraries/types.raml
+
+securitySchemes:
+  jwt:
+    type: x-jwt
+    description: |
+      A custom jwt security scheme for authentication requests.
+    describedBy:
+      headers:
+        SpecialToken:
+          description: |
+            Used to send a custom token
+          type: string
+      responses:
+        401:
+          description: |
+            Bad token.
+        403:
+/users:
+  get:
+    queryParameters:
+      username:
+        type: string
+        description: A full user's login
+        example: nickname123
+        required: false
+      name:
+        type: string
+        description: An user's full name
+        example: John
+        required: false
+      surname:
+        type: string
+        description: An user's full surname
+        example: Joestar
+        required: false
+      age:
+        type: integer
+        description: An user's age
+        example: 34
+        required: false
+      country:
+        type: string
+        description: An user's full country name
+        example: Ukraine
+        required: false
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              [
+                {
+                  "username": "john32",
+                  "name": "John",
+                  "surname": "Snow",
+                  "age": "34",
+                  "email": "john32@mail.ru",
+                  "birthDate": "1983-01-12",
+                  "country": "Ukraine",
+                  "gender": "male",
+                  "photo": "https://message-natter.com/resources/image/3242.jpg"
+                },
+                {
+                  "username": "max332",
+                  "name": "Max",
+                  "surname": "Spinner",
+                  "birthDate": "1983-01-12",
+                  "age": "34",
+                  "email": "john32@mail.ru",
+                  "gender": "male",
+                  "country": "Ukraine",
+                  "photo": "http://message-natter.com/resources/image/44224.jpg"
+                }
+              ] || []
+  /{username}:
+    get:
+      description: Resieve spefic user
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "username": "me",
+                  "name": "John",
+                  "surname": "Joestar",
+                  "photo": "http://message-natter.com/resources/images/2342.png",
+                  "email": "john32@mail.ru",
+                  "gender": "male|female",
+                  "country": "Ukraine",
+                  "age": "28",
+                  "birthDate": "1983-01-20",
+                  "desription": "Hate vampires! In charge of hamon."
+                }
+        404:
+          body:
+            application/json:
+              example: |
+                {"message": "User not found"}
+
+    post:
+      securedBy: [jwt]
+      description: Create specific user
+      body:
+        multipart/form-data:
+          properties:
+            nickname:
+              type: string
+              required: true
+            name:
+              type: string
+              required: true
+            surname:
+              type: string
+              required: true
+            email:
+              type: string
+              required: true
+            password:
+              type: string
+              required: true
+            gender:
+              type: string
+              required: true
+            birthDate:
+              type: date-only
+              required: true
+      responses:
+        200:
+          description: User was successfuly created
+          body:
+            application/json:
+              example: |
+                {
+                  "username": "john32",
+                  "name": "John",
+                  "surname": "Snow",
+                  "birthDate": "1983-01-12",
+                  "age": "34",
+                  "email": "john32@mail.ru",
+                  "country": "Ukraine",
+                  "gender": "male",
+                  "photo": "https://message-natter.com/resources/image/3242.jpg"
+                }
+    put:
+      description: Change user's fields
+      securedBy: [jwt]
+      body:
+        application/json:
+          properties:
+            username:
+              description: "Username to modify"
+              type: string
+              required: true
+              example: "john113"
+            name:
+              type: string
+              required: false
+              example: "John"
+            surname:
+              type: string
+              required: false
+              example: "Snow"
+            email:
+              type: string
+              required: false
+              example: "john322@gmail.com"
+            password:
+              type: string
+              required: false
+              example: "Qwerty12313"
+            gender:
+              type: string
+              required: false
+              example: "male"
+            birthDate:
+              type: date-only
+              required: false
+              example: "1999-01-13"
+            country:
+              type: string
+              required: false
+              example: "1999-01-13"
+      responses:
+        200:
+          description: |
+            User was successfully modified.
+          body:
+            application/json:
+              example: |
+                {
+                  "username": "john113",
+                  "name": "John",
+                  "surname": "Snow",
+                  "email": "john322@gmail.com",
+                  "birthDate": "1999-01-13",
+                  "age": "18",
+                  "gender": "male",
+                  "country": "Ukraine",
+                  "photo": "https://message-natter.com/resources/image/3242.jpg"
+                }
+        404:
+          description: |
+            User wasn't found.
+          body:
+            application/json: |
+              {"message": "Can't modify user, {username} wasn't found" }
+    /friends:
+      securedBy: [jwt]
+      get:
+        description: Get friend list either filtred or not
+        queryParameters:
+          name:
+            type: string
+            description: A full friend name of the user
+            example: Nick
+            required: false
+          surname:
+            type: string
+            description: A full friends name of the user
+            example: Planton
+            required: false
+          username:
+            type: string
+            description: A full friend's nickname
+            example: Nick1978
+            required: false
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "username": "john32",
+                      "name": "John",
+                      "surname": "Snow",
+                      "age": "34",
+                      "email": "john32@mail.ru",
+                      "birthDate": "1983-01-12",
+                      "country": "Ukraine",
+                      "gender": "male",
+                      "photo": "https://message-natter.com/resources/image/3242.jpg"
+                    },
+                    {
+                      "username": "max332",
+                      "name": "Max",
+                      "surname": "Spinner",
+                      "birthDate": "1983-01-12",
+                      "age": "34",
+                      "email": "john32@mail.ru",
+                      "gender": "male",
+                      "country": "Ukraine",
+                      "photo": "http://message-natter.com/resources/image/44224.jpg"
+                    }
+                  ] | []
+      /{username}:
+        post:
+          description: Send friendship request to user.
+          responses:
+            200:
+              body:
+                application/json:
+                  example: |
+                    {"message": "Friendship request has been sent to {username}"}
+            404:
+              body:
+                application/json:
+                  example: |
+                    {"message": "User is in friend list already"}
+        delete:
+          description: Remove user from friends list.
+          responses:
+            200:
+              body:
+                application/json:
+                  example: |
+                    {
+                    "message": "{username} was removed from friends list",
+                    "username": "John"
+                    }
+            404:
+              body:
+                application/json:
+                  example: |
+                    {
+                      "message": "Can't remove {username} from friends. It is not included to friend list"
+                    }
+      /requests:
+        get:
+          description: |
+            Return the the most recent 20 request
+          type: objects.libraries.types.FriendshipRequest.raml
+        /{id}:
+          get:
+          post:
+          delete:
+
+    /session:
+      post:
+      delete:
