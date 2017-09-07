@@ -1,11 +1,40 @@
 #%RAML 1.0
-title: Hurricane Messenger REST API
+title: MessageNatter
 version: v1
-protocols: [HTTP]
+protocols: [HTTP, HTTPS]
 baseUri: http://message-natter.com/api/{version}
 mediaType: application/json
-uses:
-  objects: !include ./libraries/types.raml
+
+types:
+  FriendshipRequest:
+    displayName: Friendship Request Object
+    description: Represents friendship request object
+    properties:
+      sender:
+        type: string
+        description: Username of request's sender
+        example: john123
+      reciever:
+        type: string
+        description: Username of request's reciever
+        example: max234
+      sendTime:
+        type: datetime-only
+        description: Request's creation time
+        example: 1998-05-03T21:00:00
+    example: |
+      {
+        "sender": "john123",
+        "reciever": "max234",
+        "sendTime": "2017-07-23T17:42:32"
+      }
+  User:
+    description: Response user object
+    displayName: User
+    properties:
+      username:
+        type: string
+        required: true
 
 securitySchemes:
   jwt:
@@ -213,6 +242,24 @@ securitySchemes:
           body:
             application/json: |
               {"message": "Can't modify user, {username} wasn't found" }
+    delete:
+      description: |
+        Remove user
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "message": "User john231 deleted"
+                }
+        404:
+          body:
+            application/json:
+              example: |
+                {
+                  "message":"Can't delete user john231. Doesn't exist."
+                }
     /friends:
       securedBy: [jwt]
       get:
@@ -295,15 +342,127 @@ securitySchemes:
                       "message": "Can't remove {username} from friends. It is not included to friend list"
                     }
       /requests:
-        get:
+        /pending: #requests to you
           description: |
-            Return the the most recent 20 request
-          type: objects.libraries.types.FriendshipRequest.raml
-        /{id}:
-          get:
-          post:
-          delete:
-
+            Represents requests that current user must reject or approve
+          get: #get most recent
+            description: |
+              Get the most recent 20 requests whick
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: FriendshipRequest[]
+          /{id}:
+            get: #getinfo
+              description: |
+                Get request
+              responses:
+                200:
+                  body:
+                    application/json:
+                      type: FriendshipRequest
+                404:
+                  body:
+                    application/json:
+                      example: {"message": "Request with id 32432423 was not found!"}
+            post: #approve
+              description: |
+                Approve request
+              responses:
+                200:
+                  body:
+                    application/json:
+                      example: {"message": "Request 25253 was approved"}
+                404:
+                  body:
+                    application/json:
+                      example: {"message": "Request with id 32234234  was not found"}
+            delete: #reject
+              description:  |
+                Reject request
+              responses:
+                200:
+                  body:
+                    application/json:
+                      example: {"message": "Request 25235 was rejected"}
+                404:
+                  body:
+                    application/json:
+                      example: {"message": "Request with id 25253 was not found"}
+        /my:
+          description: |
+            Represents requests that current user produced
+          get: #get most recent
+            description: |
+              Get the most recent 20 requests whick
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: FriendshipRequest[]
+          post: #create new
+            description: |
+              Create new friendship request to specified friend
+            body:
+              application/json:
+                properties:
+                  friend:
+                    type: string
+                    required: true
+                example: |
+                  {
+                    "friend": "max323"
+                  }
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: FriendshipRequest
+                    description: Created request object
+              404:
+                body:
+                  application/json:
+                    example: |
+                      {
+                        "message": "User with nickname max323 was not found in friend list"
+                      }
+          /{id}:
+            get:  #get info
+              responses:
+                200:
+                  body:
+                    application/json:
+                      type: FriendshipRequest
+                      description: Friedship request object
+            delete: #remove
+              description: Remove friendship request
+              responses:
+                200:
+                  body:
+                    application/json:
+                      example: {"message": "Friendship request 235235 was removed"}
+                404:
+                  body:
+                    application/json:
+                      example: {"message": "Friendship request 2352314 was not found"}
     /session:
       post:
+        description: |
+          Log in function
+        body:
+          properties:
+            username:
+              type: string
+              required: true
+            password:
+              type: string
+              required: true
+        responses:
+          200:
+          403:
       delete:
+        description: |
+          Log out function
+        responses:
+          200:
