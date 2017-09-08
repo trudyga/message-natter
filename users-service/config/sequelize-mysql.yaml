@@ -1,0 +1,7 @@
+database: MessageNatterUsers
+username: MessageNatterUsersService
+password: MessageNatterUsersService
+params:
+  dialect: mysql
+  host: localhost
+  port: 3306
