@@ -3,16 +3,16 @@ FROM node:8.3.0
 LABEL "name"="users-service"
 LABEL "author"="trudyga0822@gmail.com"
 
-WORKDIR /src
+WORKDIR /usr/app
 
 EXPOSE 80
 
 ENV PORT=80
 ENV DEBUG="users-service:*"
 
-ENTRYPOINT ["node", "server.js"]
+CMD ["node", "server.js"]
 
-COPY package.json /src
+COPY package.json .
 RUN npm install
 
 COPY . /src

@@ -1,0 +1,77 @@
+[
+  {
+    "username": "trudyga_latin",
+    "password": "password",
+    "strategy": "local",
+    "email": "email@example.com",
+    "profile": {
+      "name": "Влад",
+      "surname": "Середа",
+      "dateOfBirth": "2012-04-23T18:25:43.511Z",
+      "gender": "male",
+      "country": "Ukraine",
+      "photo": "",
+      "description": "Это я"
+    }
+  },
+  {
+    "username": "trudyga_latin1",
+    "password": "password",
+    "strategy": "local",
+    "email": "email@example.com",
+    "profile": {
+      "name": "Влад1",
+      "surname": "Середа1",
+      "dateOfBirth": "2012-04-23T18:25:43.511Z",
+      "gender": "male",
+      "country": "Ukraine",
+      "photo": "",
+      "description": "Это я"
+    }
+  },
+  {
+    "username": "trudyga_latin2",
+    "password": "password",
+    "strategy": "local",
+    "email": "email@example.com",
+    "profile": {
+      "name": "Влад2",
+      "surname": "Середа2",
+      "dateOfBirth": "2012-04-23",
+      "gender": "male",
+      "country": "Ukraine",
+      "photo": "",
+      "description": "Это я"
+    }
+  },
+  {
+    "username": "trudyga_latin3",
+    "password": "password",
+    "strategy": "local",
+    "email": "email@example.com",
+    "profile": {
+      "name": "Влад3",
+      "surname": "Середа3",
+      "dateOfBirth": "2012-04-23",
+      "gender": "male",
+      "country": "Ukraine",
+      "photo": "",
+      "description": "Это я"
+    }
+  },
+  {
+    "username": "trudyga_latin4",
+    "password": "password",
+    "strategy": "local",
+    "email": "email@example.com",
+    "profile": {
+      "name": "Влад4",
+      "surname": "Середа4",
+      "dateOfBirth": "2012-04-23",
+      "gender": "male",
+      "country": "Ukraine",
+      "photo": "",
+      "description": "Это я"
+    }
+  }
+]

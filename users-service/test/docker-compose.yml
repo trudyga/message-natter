@@ -1,0 +1,45 @@
+version: '3'
+services:
+  users-service-test:
+    build: ../
+    container_name: users-service-test
+    command: npm test
+    volumes:
+      - ../:/usr/app
+      - /usr/app/node_modules
+    ports:
+      - 80
+    links:
+      - users-db-test
+    depends_on:
+      - users-db-test
+    environment:
+      PORT: 80
+      DEBUG: users-service:*
+      STORAGE_MODEL: mysql
+    networks:
+      usernet-test:
+  users-db-test:
+    image: mysql:5.7
+    container_name: users-db-test
+    volumes:
+      - db-users-data-test:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "MessageNatterUsers"
+      MYSQL_USER: "MessageNatterUsersService"
+      MYSQL_PASSWORD: "MessageNatterUsersService"
+      MYSQL_ROOT_PASSWORD: "password"
+    command: mysqld
+    expose:
+      - 3306
+    ports:
+      - 3306
+    networks:
+      usernet-test:
+networks:
+  usernet-test:
+    driver: bridge
+
+volumes:
+  db-users-data-test:
+  users-service:

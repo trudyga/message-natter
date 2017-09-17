@@ -1,0 +1,15 @@
+{
+  "username": "trudyga_latin",
+  "password": "password",
+  "strategy": "local",
+  "email": "email@example.com",
+  "profile": {
+    "name": "Влад",
+    "surname": "Середа",
+    "dateOfBirth": "2012-04-23",
+    "gender": "male",
+    "country": "Ukraine",
+    "photo": "",
+    "description": "Это я"
+  }
+}

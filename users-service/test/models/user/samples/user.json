@@ -1,0 +1,15 @@
+{
+  "username": "trudyga",
+  "password": "password",
+  "strategy": "local",
+  "email": "email@example.com",
+  "profile": {
+    "name": "Vlad",
+    "surname": "Sereda",
+    "dateOfBirth": "2012-04-23",
+    "gender": "male",
+    "country": "Ukraine",
+    "photo": "https://message-natter.com/resources/photo/1",
+    "description": "This is me"
+  }
+}

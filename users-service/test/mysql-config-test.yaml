@@ -1,0 +1,14 @@
+database: MessageNatterUsers
+username: MessageNatterUsersService
+password: MessageNatterUsersService
+options:
+  dialect: mysql
+  host: users-db-test
+  port: 3306
+  pool:
+    max: 20,
+    min: 0,
+    idle: 10000
+  dialectOptions:
+    charset: 'utf8mb4'
+  logging: false
