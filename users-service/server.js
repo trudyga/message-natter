@@ -22,38 +22,41 @@ server.get('/users', function (req, res, next) {
         age: req.query.age
     };
 
-    // filter all the users
     storageModel.user.getAll()
-        .then(users => users.filter(u => {
-            if(options.username)
-                return u.username === options.username;
-            return true;
-        }))
-        .then(users => users.filter(u => {
-            if (options.name)
-                return u.name === options.name;
-            return true;
-        }))
-        .then(users => users.filter(u => {
-            if (options.surname)
-                return u.surname === options.surname;
-            return true;
-        }))
-        .then(users => users.filter(u => {
-            if (options.country)
-                return u.country === options.country;
-            return true;
-        }))
-        .then(users => users.filter(u => {
-            if (options.age)
-            {
-                let age = new Date(new Date() - u.dateOfBirth).getFullYear();
-                return age === options.age;
-            }
-            return true;
-
-        }))
         .then(users => {
+            return users.map(u => sanitizeUser(u));
+        })
+        // .then(users => users.filter(u => {
+        //     if(options.username)
+        //         return u.username === options.username;
+        //     return true;
+        // }))
+        // .then(users => users.filter(u => {
+        //     if (options.name)
+        //         return u.profile.name === options.name;
+        //     return true;
+        // }))
+        // .then(users => users.filter(u => {
+        //     if (options.surname)
+        //         return u.profile.surname === options.surname;
+        //     return true;
+        // }))
+        // .then(users => users.filter(u => {
+        //     if (options.country)
+        //         return u.profile.country === options.country;
+        //     return true;
+        // }))
+        // .then(users => users.filter(u => {
+        //     if (options.age)
+        //     {
+        //         let age = new Date(new Date() - u.profile.dateOfBirth).getFullYear();
+        //         return age === options.age;
+        //     }
+        //     return true;
+        //
+        // }))
+        .then(users => {
+            debug(users);
             res.send(users);
             next(false);
         })
@@ -64,6 +67,9 @@ server.get('/users', function (req, res, next) {
         });
 });
 
+/**
+ * Register new user
+ */
 server.post('/users', function (req, res, next) {
     "use strict";
     let user = req.body;
@@ -87,7 +93,7 @@ server.post('/users', function (req, res, next) {
         withProfile: true
     })).then(u => {
         res.statusCode = 201;
-        res.send(u);
+        res.send(sanitizeUser(u));
         next(false);
     }).catch(err => {
         res.statusCode = 400;
@@ -96,6 +102,9 @@ server.post('/users', function (req, res, next) {
     });
 });
 
+/**
+ * Retrieve specific user
+ */
 server.get('/users/:username', function (req, res, next) {
     let username = req.params.username;
     debug(`Get ${username} user`);
@@ -104,10 +113,13 @@ server.get('/users/:username', function (req, res, next) {
             username: username,
             withProfile: true
         }).then(u => {
-        debug(u);
         if (!u)
             throw new Error('User does not exist');
-        res.send(u);
+
+        let user = sanitizeUser(u);
+        res.send(user);
+        debug("Return user");
+        debug(user);
         next(false);
     }).catch(err => {
         "use strict";
@@ -119,6 +131,9 @@ server.get('/users/:username', function (req, res, next) {
     });
 });
 
+/**
+ * Delete specific user
+ */
 server.del('/users/:username', function (req, res, next) {
     "use strict";
     let username = req.params.username;
@@ -180,6 +195,9 @@ server.put('/users/:username', function (req, res, next) {
     });
 });
 
+/**
+ * Check password
+ */
 server.post('/users/session', function (req, res, next) {
     "use strict";
     let username = req.body.username;
@@ -205,6 +223,18 @@ server.post('/users/session', function (req, res, next) {
                });
         });
 });
+
+/**
+ * Remove all unnecessary fields from user
+ * @param {Object} user - db model instance
+ * @returns {Object} sanitized user
+ */
+function sanitizeUser(user) {
+    "use strict";
+    let u = user.dataValues;
+    u.profile = u.profile.dataValues;
+    return u;
+}
 
 server.listen(port, function () {
     console.log('%s is listening on %s', server.name, server.url);

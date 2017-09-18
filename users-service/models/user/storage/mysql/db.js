@@ -13,11 +13,15 @@ let User;
 let Profile;
 let Friend;
 
+/**
+ * Initialize and connect to db
+ * @returns {Promise<Sequelize>} - db object
+ */
 module.exports.connectDb = function () {
     if (db) return Promise.resolve(db);
 
     return new Promise((resolve, reject) => {
-        fs.readFile(path.join(__dirname, '../../../../test/mysql-config-test.yaml'), 'utf-8', (err, data) => {
+        fs.readFile(process.env.DB_CONFIG, 'utf-8', (err, data) => {
             debug("Connection config file read!");
             if (err)
                 reject(err);
@@ -38,17 +42,9 @@ module.exports.connectDb = function () {
 
             exports.models.User.Profile = exports.models.User.hasOne(exports.models.Profile, {
                 as: 'profile',
+                foreignKey: 'userId',
                 onDelete: 'CASCADE'});
 
-
-            // exports.models.User.FrienshipReceiver = exports.models.User.hasMany(exports.models.Friendship, {
-            //     foreignKey: 'receiver',
-            //     targetKey: 'username',
-            //     onDelete: 'CASCADE'});
-            // exports.models.User.FriendshipSender = exports.models.User.hasMany(exports.models.Friendship, {
-            //     foreignKey: 'sender',
-            //     targetKey: 'username',
-            //     onDelete: 'CASCADE'});
 
             exports.schemas = {
                 sqlUser: exports.models.User.sync(),
@@ -60,6 +56,10 @@ module.exports.connectDb = function () {
         });
 };
 
+/**
+ * Retrieve synchronized user schema.
+ * @returns {Promise.<Model>} User schema model
+ */
 module.exports.getUserSchema = function () {
     return exports.connectDb().then(() => {
         if (exports.schemas.sqlUser)
@@ -68,6 +68,10 @@ module.exports.getUserSchema = function () {
     });
 };
 
+/**
+ * Retrieve synchronized profile schema.
+ * @returns {Promise.<Model>} Profile schema model
+ */
 module.exports.getProfileSchema = function () {
     return module.exports.connectDb().then(() => {
         if (exports.schemas.sqlProfile)
@@ -76,6 +80,10 @@ module.exports.getProfileSchema = function () {
     });
 };
 
+/**
+ * Retrieve synchronized friendship schema.
+ * @returns {Promise.<Model>} Friendship schema model
+ */
 module.exports.getFriendshipSchema = function () {
     return module.exports.connectDb().then(() => {
         if (exports.schemas.sqlFriendship)

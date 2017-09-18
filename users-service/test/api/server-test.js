@@ -5,12 +5,14 @@ const should = chai.should();
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 
+const debug = require('debug')('users-service:server-test');
 const db = require('../../models/user/storage');
 const server = require('../../server');
 
 describe('Api test', function () {
     let request = chai.request('http://users-service-test:80');
     let user = require('../models/user/samples/user_latin.json');
+    let users = require('../models/user/samples/users.json');
 
     beforeEach('Remove all users' ,function () {
         return db.user.deleteAll();
@@ -47,12 +49,30 @@ describe('Api test', function () {
             return db.user.deleteAll();
         });
 
-        it('Should return all users', function () {
+        it('Should return 0 users when no one exist', function () {
             "use strict";
             return request
                 .get('/users')
-                .then(res => res.body.should.be.instanceOf(Array));
+                .then(res => {
+                    res.body.should.be.instanceOf(Array);
+                    res.body.should.have.lengthOf(0);
+                });
         });
+
+        it('Should return n users when n users exist' ,function () {
+            "use strict";
+            return Promise.all(users.map(u => db.user.create(u)))
+                .then((usersPromises) => {
+                    request.get('/users')
+                        .then(res => {
+                            debug(res.body);
+                            res.body.should.be.instanceOf(Array);
+                            rees.body.should.have.lengthOf(users.length);
+                        });
+                });
+        });
+
+
 
         describe('Should return all users filtered by', function () {
             beforeEach('Remove all users', function () {

@@ -9,6 +9,11 @@ const errors = require('../../../errors/index');
 
 const db = require('../db');
 
+/**
+ * Return all friend of the user
+ * @param {String} username - username to search the friends
+ * @returns {Promise.<Object[]>} Friends
+ */
 exports.getAll = function (username) {
     "use strict";
     return db.getFriendshipSchema().then(schema => {
@@ -16,6 +21,10 @@ exports.getAll = function (username) {
     });
 };
 
+/**
+ * Delete all friends in the table
+ * @returns {Promise.<Object>} number of affected rows
+ */
 exports.deleteAll = function () {
     "use strict";
     return db.getFriendshipSchema().then(schema => {
@@ -25,6 +34,11 @@ exports.deleteAll = function () {
     });
 };
 
+/**
+ * Get friendship by id
+ * @param {Number} frienshipId - id of the friendship
+ * @returns {Promise.<Object>} Friendship object
+ */
 exports.get = function (frienshipId) {
     return db.getFriendshipSchema().then(schema => {
         "use strict";
@@ -34,6 +48,12 @@ exports.get = function (frienshipId) {
     });
 };
 
+/**
+ * Create new friendship
+ * @param {String} senderUsername
+ * @param {String} receiverUsername
+ * @returns {Promise.<Object>} Created friendship object
+ */
 exports.create = function (senderUsername, receiverUsername) {
     "use strict";
     return db.getFriendshipSchema().then(schema => {
@@ -43,11 +63,21 @@ exports.create = function (senderUsername, receiverUsername) {
     });
 };
 
+/**
+ * Remove friendship by id
+ * @param {Number} friendshipId - friendship id
+ * @returns {Promise.<Object>} id of the deleted friendship
+ */
 exports.delete = function (friendshipId) {
     "use strict";
 
 };
 
+/**
+ * Set pending status of the friendship to false
+ * @param {Number} frienshipId
+ * @returns {Promise.<Object>} Friendship object
+ */
 exports.approve = function (frienshipId) {
 
 };

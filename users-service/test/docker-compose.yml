@@ -17,6 +17,7 @@ services:
       PORT: 80
       DEBUG: users-service:*
       STORAGE_MODEL: mysql
+      DB_CONFIG: /usr/app/test/sequelize-mysql-test.yaml
     networks:
       usernet-test:
   users-db-test:

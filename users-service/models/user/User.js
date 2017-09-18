@@ -1,13 +1,8 @@
 const errors = require('./errors');
+const Profile = require('./Profile');
 
 module.exports = class User {
     constructor(user) {
-        // if (!user.username
-        // || !user.password
-        // || !user.strategy
-        // || !user.email)
-        //     throw new errors.IncompleteDataError(['username', 'password', 'strategy', 'email']);
-
         this.username = user.username;
         this.password = user.password;
         this.strategy = user.strategy;

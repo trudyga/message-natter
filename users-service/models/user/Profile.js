@@ -1,5 +1,3 @@
-const errors = require('errors');
-
 module.exports = class Profile {
     constructor(profile) {
 
@@ -33,6 +31,6 @@ module.exports = class Profile {
      * @returns {Date}
      */
     get age() {
-        return new Date(this.createdAt - Date.now());
+        return new Date(+this.createdAt - Date.now());
     }
 };

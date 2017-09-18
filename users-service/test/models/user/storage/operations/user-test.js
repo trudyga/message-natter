@@ -16,6 +16,10 @@ describe('User model storage operations', function () {
     let user = require('../../samples/user.json');
     let latinUser = require('../../samples/user_latin.json');
 
+    beforeEach('Delete all users', function () {
+       return db.user.deleteAll();
+    });
+
     describe('User creation operations', function () {
         afterEach(function () {
             return db.user.deleteAll();
@@ -69,6 +73,14 @@ describe('User model storage operations', function () {
                 withProfile: true
             }).should.be.fulfilled
                 .and.should.eventually.have.property('profile');
+        });
+
+        it('Should have all the fields', function () {
+           return db.user.get({
+               username: latinUser.username
+           }).then(u => {
+
+           });
         });
     });
 

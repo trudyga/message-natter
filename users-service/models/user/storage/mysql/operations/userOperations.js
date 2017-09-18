@@ -1,18 +1,21 @@
 const Sequelize = require('sequelize').Sequelize;
 const DataTypes = require('sequelize').DataTypes;
 const Model = require('sequelize').Model;
-const path = require('path');
-const fs = require('fs');
-const jsyaml = require('js-yaml');
 const debug = require('debug')('users-service:mysql-db');
-const errors = require('../../../errors/index');
+const User = require('../../../User');
+const errors = require('../../../errors');
 
 const db = require('../db');
 
+/**
+ * Return user by username
+ * @param {Object} options {username, withProfile}
+ * @returns {Promise<Object>}
+ */
 exports.get = function (options) {
     "use strict";
     if (!options)
-        return Promise.reject("No options for user retrivement specified");
+        return Promise.reject("No options for user retrievement specified");
 
     if (options.username)
         return db.getUserSchema().then(schema =>
@@ -23,17 +26,33 @@ exports.get = function (options) {
                 }));
     if (options.id)
         return db.getUserSchema().then(schema =>
-            schema.find({where: {id: options.id}}));
+            schema.find({
+                where: {id: options.id},
+            }));
     else
         return Promise.reject("No id or password specified");
 };
 
+/**
+ * Return all users
+ * @returns {Promise.<Object[]>}
+ */
 exports.getAll = function () {
     return db.getUserSchema().then(schema => {
-        return schema.findAll({ include: [{ all: true, nested: true }]});
+        return schema.findAll({
+            include: [{
+                model: db.models.Profile,
+                as: 'profile'
+            }]
+        });
     });
 };
 
+/**
+ * Add new user to storage
+ * @param {Object} user
+ * @returns {Promise.<Object>}
+ */
 exports.create = function (user) {
     return exports.get({username: user.username}).then(u => {
         if (u)
@@ -57,6 +76,12 @@ exports.create = function (user) {
     });
 };
 
+/**
+ * Update user fields in storage
+ * @param {String} username - username of the user to update
+ * @param {Object} newUser - new user fields to update
+ * @returns {Promise.<Object>} - New user object
+ */
 exports.update = function (username, newUser) {
     "use strict";
     let login = username !== newUser.username ?
@@ -72,6 +97,12 @@ exports.update = function (username, newUser) {
     });
 };
 
+/**
+ * Updates username of the specified user
+ * @param {String} username - Username to update
+ * @param {String} newUsername - New username
+ * @returns {Promise.<Object>}
+ */
 exports.updateUsername = function (username, newUsername) {
     return exports.get({username: username}).then(u => {
         "use strict";
@@ -94,6 +125,11 @@ exports.updateUsername = function (username, newUsername) {
     }));
 };
 
+/**
+ * Delete user by username
+ * @param {String} username - Username
+ * @returns {Promise.<Object>} Username of destroyed user
+ */
 exports.delete = function (username) {
     "use strict";
     return db.getUserSchema().then(schema => {
@@ -103,15 +139,19 @@ exports.delete = function (username) {
             throw "User doesn't exist";
         return u.destroy();
     }).then(() => {
-        return {username};
-    });
+        db.profile.delete(username)
+    }).then(() => {return {username}});
 };
 
+/**
+ * Remove all users from the database
+ * @returns {Promise.<Object>} Number of affected rows
+ */
 exports.deleteAll = function () {
     return db.getUserSchema().then(schema => {
         "use strict";
-        schema.destroy({
+        return schema.destroy({
             where: {}
-        });
+        }).then(() => db.profile.deleteAll());
     });
 };
