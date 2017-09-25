@@ -45,7 +45,6 @@ module.exports.connectDb = function () {
                 foreignKey: 'userId',
                 onDelete: 'CASCADE'});
 
-
             exports.schemas = {
                 sqlUser: exports.models.User.sync(),
                 sqlProfile: exports.models.Profile.sync(),

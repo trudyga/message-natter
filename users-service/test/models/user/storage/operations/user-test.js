@@ -52,6 +52,11 @@ describe('User model storage operations', function () {
             return db.user.deleteAll();
         });
 
+        it('Should return null if user does not exist', function () {
+            return db.user.get({username: 'noUser'}).should.be.fulfilled
+                .and.should.eventually.be.null;
+        });
+
         it('Should throw exception when no parameters passed', function () {
             return db.user.get().should.be.rejected;
         });
@@ -67,7 +72,7 @@ describe('User model storage operations', function () {
                 .and.should.eventually.have.property('username', user.username);
         });
 
-        it('Should return user with profile is options is specified', function () {
+        it('Should return user with profile if options is specified', function () {
             return db.user.get({
                 username: latinUser.username,
                 withProfile: true
@@ -79,7 +84,12 @@ describe('User model storage operations', function () {
            return db.user.get({
                username: latinUser.username
            }).then(u => {
-
+               u = u.dataValues;
+               u.should.have.property('id');
+               u.should.have.property('username', latinUser.username);
+               u.should.have.property('password', latinUser.password);
+               u.should.have.property('email', latinUser.email);
+               u.should.have.property('strategy', latinUser.strategy);
            });
         });
     });

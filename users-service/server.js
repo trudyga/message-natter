@@ -1,5 +1,6 @@
 const restify = require('restify');
 const debug = require('debug')('users-service:server');
+const error = require('debug')('users-service:error');
 
 const server = restify.createServer();
 const storageModel = require('./models/user/storage');
@@ -73,6 +74,8 @@ server.get('/users', function (req, res, next) {
 server.post('/users', function (req, res, next) {
     "use strict";
     let user = req.body;
+    debug(`Get post user request`);
+    debug(user);
     let u = {
         username: user.username,
         password: user.password,
@@ -96,6 +99,7 @@ server.post('/users', function (req, res, next) {
         res.send(sanitizeUser(u));
         next(false);
     }).catch(err => {
+        error(err);
         res.statusCode = 400;
         res.send(err.message);
         next(false);
@@ -202,7 +206,7 @@ server.post('/users/session', function (req, res, next) {
     "use strict";
     let username = req.body.username;
     let password = req.body.password;
-    storageModel.user.get({username})
+    storageModel.user.get({username: username})
         .then(u => {
             if (!u)
                 res.send({

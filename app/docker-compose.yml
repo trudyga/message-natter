@@ -1,0 +1,70 @@
+version: '3'
+services:
+  message-natter:
+    build: ./
+    container_name: message-natter
+    command: npm start
+    ports:
+      - 80:80
+    expose:
+      - 80
+    links:
+      - users-service
+    depends_on:
+      - users-service
+      - users-db
+    environment:
+      PORT: 80
+      DEBUG: message-natter:*
+    networks:
+      frontnet:
+      usernet:
+
+  users-service:
+    build: ../users-service
+    container_name: users-service
+    command: npm start
+    volumes:
+      - ../users-service:/usr/app
+      - /usr/app/node_modules
+    ports:
+      - 80
+    expose:
+      - 80
+    depends_on:
+      - users-db
+    links:
+      - users-db
+    environment:
+      PORT: 80
+      DEBUG: users-service:*
+      STORAGE_MODEL: mysql
+      DB_CONFIG: /usr/app/config/sequelize-mysql.yaml
+    networks:
+      usernet:
+  users-db:
+    image: mysql:5.7
+    container_name: users-db
+    volumes:
+      - db-users-data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "MessageNatterUsers"
+      MYSQL_USER: "MessageNatterUsersService"
+      MYSQL_PASSWORD: "MessageNatterUsersService"
+      MYSQL_ROOT_PASSWORD: "password"
+    command: mysqld
+    expose:
+      - 3306
+    ports:
+      - 3306
+    networks:
+      usernet:
+networks:
+  usernet:
+    driver: bridge
+  frontnet:
+    driver: bridge
+
+volumes:
+  db-users-data:
+  users-service:
